@@ -3,7 +3,7 @@ const router = express.Router()
 
 const { body } = require('express-validator')
 
-const PatientModel = require('../models/patient')
+//const PatientModel = require('../models/patient')
 const appPatientController = require('../controllers/appPatient')
 //const isAdminAuth = require('../middleware/isAdminAuth')
 
