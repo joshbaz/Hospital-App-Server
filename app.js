@@ -10,6 +10,7 @@ const app = express()
 const adminRoutes = require('./api/routes/adminRoutes')
 const patientRoutes = require('./api/routes/patientRoutes')
 const appPatientRoutes = require('./api/routes/appPatientRoutes')
+const appVitalRoutes = require('./api/routes/appVitalsRoutes')
 //apply middleware
 app.use(cors())
 app.use(bodyparser.json())
@@ -45,6 +46,7 @@ app.get('/', (req, res, next) => {
 app.use('/admin', adminRoutes)
 app.use('/patient', patientRoutes)
 app.use('/appPatient', appPatientRoutes)
+app.use('/appVital', appVitalRoutes)
 
 /** global error handling */
 app.use((error, req, res, next) => {

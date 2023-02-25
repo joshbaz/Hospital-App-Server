@@ -2160,12 +2160,12 @@ exports.getDashPieGraphSummary = async (req, res, next) => {
         const BloodPressureReports = await VitalModel.find({
             $and: [
                 {
-                    createdMonth: {
+                    creationMonth: {
                         $in: [Month],
                     },
                 },
                 {
-                    createdYear: {
+                    creationYear: {
                         $in: [Year],
                     },
                 },

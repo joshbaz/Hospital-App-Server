@@ -17,6 +17,13 @@ const patientSchema = mongoose.Schema(
         password: {
             type: String,
         },
+        unVerifiedPassword: {
+            type: String,
+        },
+        onBoardInfo: {
+            type: Boolean,
+            default: false,
+        },
         birthday: {
             type: String,
             required: true,

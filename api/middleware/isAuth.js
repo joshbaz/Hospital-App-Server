@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const PatientModel = require('../models/patient')
 require('dotenv').config()
 
 module.exports = (req, res, next) => {
@@ -28,5 +29,22 @@ module.exports = (req, res, next) => {
 
     req.userId = decodedToken.userId
 
-    next()
+    const runCheck = async () => {
+        try {
+            const findAdmin = await PatientModel.findById(decodedToken.userId)
+            if (!findAdmin) {
+                const error = new Error('Not authorized')
+                error.statusCode = 403
+                throw error
+            }
+
+            next()
+        } catch (error) {
+            err.statusCode = 500
+            throw err
+        }
+    }
+
+    runCheck()
+    // next()
 }

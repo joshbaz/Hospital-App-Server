@@ -29,11 +29,20 @@ const vitalsSchema = mongoose.Schema(
         status: {
             type: String,
         },
+        otherSymptoms: {
+            feeling: String,
+            symptoms: [
+                {
+                    title: String,
+                },
+            ],
+        },
         creationMonth: String,
         creationYear: String,
         createdDate: String,
+        vitalRecodedTime: String
     },
-    { timestamp: true }
+    { timestamps: true }
 )
 
 module.exports = mongoose.model('vitals', vitalsSchema)
