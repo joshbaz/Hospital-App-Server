@@ -393,7 +393,7 @@ exports.getAllBPVitals = async (req, res, next) => {
 exports.getAllBSVitals = async (req, res, next) => {
     try {
         const getBSVitals = await VitalModel.find({
-            healthType: 'Blood Sugar',
+            healthType: 'Blood Glucose',
         }).populate('patientUniqueId')
 
         res.status(200).json({
@@ -414,6 +414,7 @@ exports.getAllFAVitals = async (req, res, next) => {
             healthType: 'Fitness Activities',
         }).populate('patientUniqueId')
 
+        console.log('fitness', getFAVitals)
         res.status(200).json({
             items: getFAVitals,
         })
@@ -466,125 +467,113 @@ exports.getGeneralVitalSummary = async (req, res, next) => {
         //last 7 days
         const Date1 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(1, 'd')
-            .format('DD-MM-YY')
+            .subtract(0, 'd')
+            .format('DD-MM-YYYY')
+            .toString()
         const Date2 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(2, 'd')
-            .format('DD-MM-YY')
+            .subtract(1, 'd')
+            .format('DD-MM-YYYY')
+            .toString()
         const Date3 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(3, 'd')
-            .format('DD-MM-YY')
+            .subtract(2, 'd')
+            .format('DD-MM-YYYY')
         const Date4 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(4, 'd')
-            .format('DD-MM-YY')
+            .subtract(3, 'd')
+            .format('DD-MM-YYYY')
         const Date5 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(5, 'd')
-            .format('DD-MM-YY')
+            .subtract(4, 'd')
+            .format('DD-MM-YYYY')
         const Date6 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(6, 'd')
-            .format('DD-MM-YY')
+            .subtract(5, 'd')
+            .format('DD-MM-YYYY')
         const Date7 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(7, 'd')
-            .format('DD-MM-YY')
+            .subtract(6, 'd')
+            .format('DD-MM-YYYY')
 
         const prevDates1 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(8, 'd')
-            .format('DD-MM-YY')
+            .subtract(7, 'd')
+            .format('DD-MM-YYYY')
         const prevDates2 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(9, 'd')
-            .format('DD-MM-YY')
+            .subtract(8, 'd')
+            .format('DD-MM-YYYY')
         const prevDates3 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(10, 'd')
-            .format('DD-MM-YY')
+            .subtract(9, 'd')
+            .format('DD-MM-YYYY')
         const prevDates4 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(11, 'd')
-            .format('DD-MM-YY')
+            .subtract(10, 'd')
+            .format('DD-MM-YYYY')
         const prevDates5 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(12, 'd')
-            .format('DD-MM-YY')
+            .subtract(11, 'd')
+            .format('DD-MM-YYYY')
         const prevDates6 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(13, 'd')
-            .format('DD-MM-YY')
+            .subtract(12, 'd')
+            .format('DD-MM-YYYY')
         const prevDates7 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(14, 'd')
-            .format('DD-MM-YY')
+            .subtract(13, 'd')
+            .format('DD-MM-YYYY')
 
         // previous calculated month
         const BeforeBF = await VitalModel.find({
-            $or: [
-                { createdDate: Date1 },
-                { createdDate: Date2 },
-                { createdDate: Date3 },
-                { createdDate: Date4 },
-                { createdDate: Date5 },
-                { createdDate: Date6 },
-                { createdDate: Date7 },
-            ],
             $and: [
                 {
                     vitalTimelineType: 'Before Breakfast',
                 },
+                {
+                    creationDateFormat: {
+                        $in: [Date1, Date2, Date3, Date4, Date5, Date6, Date7],
+                    },
+                },
             ],
         }).countDocuments()
 
+        console.log('alll test', BeforeBF, Date1, Date7)
+
         const BeforeLunch = await VitalModel.find({
-            $or: [
-                { createdDate: Date1 },
-                { createdDate: Date2 },
-                { createdDate: Date3 },
-                { createdDate: Date4 },
-                { createdDate: Date5 },
-                { createdDate: Date6 },
-                { createdDate: Date7 },
-            ],
             $and: [
                 {
                     vitalTimelineType: 'Before Lunch',
                 },
+                {
+                    creationDateFormat: {
+                        $in: [Date1, Date2, Date3, Date4, Date5, Date6, Date7],
+                    },
+                },
             ],
         }).countDocuments()
         const BeforeDinner = await VitalModel.find({
-            $or: [
-                { createdDate: Date1 },
-                { createdDate: Date2 },
-                { createdDate: Date3 },
-                { createdDate: Date4 },
-                { createdDate: Date5 },
-                { createdDate: Date6 },
-                { createdDate: Date7 },
-            ],
             $and: [
                 {
                     vitalTimelineType: 'Before Dinner',
                 },
+                {
+                    creationDateFormat: {
+                        $in: [Date1, Date2, Date3, Date4, Date5, Date6, Date7],
+                    },
+                },
             ],
         }).countDocuments()
         const BeforeBedtime = await VitalModel.find({
-            $or: [
-                { createdDate: Date1 },
-                { createdDate: Date2 },
-                { createdDate: Date3 },
-                { createdDate: Date4 },
-                { createdDate: Date5 },
-                { createdDate: Date6 },
-                { createdDate: Date7 },
-            ],
             $and: [
                 {
                     vitalTimelineType: 'Before Bedtime',
+                },
+                {
+                    creationDateFormat: {
+                        $in: [Date1, Date2, Date3, Date4, Date5, Date6, Date7],
+                    },
                 },
             ],
         }).countDocuments()
@@ -592,66 +581,82 @@ exports.getGeneralVitalSummary = async (req, res, next) => {
         //month before calculated month
 
         const PreviousBeforeBF = await VitalModel.find({
-            $or: [
-                { createdDate: prevDates1 },
-                { createdDate: prevDates2 },
-                { createdDate: prevDates3 },
-                { createdDate: prevDates4 },
-                { createdDate: prevDates5 },
-                { createdDate: prevDates6 },
-                { createdDate: prevDates7 },
-            ],
             $and: [
                 {
                     vitalTimelineType: 'Before Breakfast',
                 },
+                {
+                    creationDateFormat: {
+                        $in: [
+                            prevDates1,
+                            prevDates2,
+                            prevDates3,
+                            prevDates4,
+                            prevDates5,
+                            prevDates6,
+                            prevDates7,
+                        ],
+                    },
+                },
             ],
         }).countDocuments()
         const PreviousBeforeLunch = await VitalModel.find({
-            $or: [
-                { createdDate: prevDates1 },
-                { createdDate: prevDates2 },
-                { createdDate: prevDates3 },
-                { createdDate: prevDates4 },
-                { createdDate: prevDates5 },
-                { createdDate: prevDates6 },
-                { createdDate: prevDates7 },
-            ],
             $and: [
                 {
                     vitalTimelineType: 'Before Lunch',
                 },
+                {
+                    creationDateFormat: {
+                        $in: [
+                            prevDates1,
+                            prevDates2,
+                            prevDates3,
+                            prevDates4,
+                            prevDates5,
+                            prevDates6,
+                            prevDates7,
+                        ],
+                    },
+                },
             ],
         }).countDocuments()
         const PreviousBeforeDinner = await VitalModel.find({
-            $or: [
-                { createdDate: prevDates1 },
-                { createdDate: prevDates2 },
-                { createdDate: prevDates3 },
-                { createdDate: prevDates4 },
-                { createdDate: prevDates5 },
-                { createdDate: prevDates6 },
-                { createdDate: prevDates7 },
-            ],
             $and: [
                 {
                     vitalTimelineType: 'Before Dinner',
                 },
+                {
+                    creationDateFormat: {
+                        $in: [
+                            prevDates1,
+                            prevDates2,
+                            prevDates3,
+                            prevDates4,
+                            prevDates5,
+                            prevDates6,
+                            prevDates7,
+                        ],
+                    },
+                },
             ],
         }).countDocuments()
         const PreviousBeforeBedtime = await VitalModel.find({
-            $or: [
-                { createdDate: prevDates1 },
-                { createdDate: prevDates2 },
-                { createdDate: prevDates3 },
-                { createdDate: prevDates4 },
-                { createdDate: prevDates5 },
-                { createdDate: prevDates6 },
-                { createdDate: prevDates7 },
-            ],
             $and: [
                 {
                     vitalTimelineType: 'Before Bedtime',
+                },
+                {
+                    creationDateFormat: {
+                        $in: [
+                            prevDates1,
+                            prevDates2,
+                            prevDates3,
+                            prevDates4,
+                            prevDates5,
+                            prevDates6,
+                            prevDates7,
+                        ],
+                    },
                 },
             ],
         }).countDocuments()
@@ -699,6 +704,7 @@ exports.getGeneralVitalSummary = async (req, res, next) => {
 exports.getVitalsMonthSummary = async (req, res, next) => {
     try {
         const currentMonth = Moments().tz('Africa/Nairobi').format('MMMM')
+        const currentYear = Moments().tz('Africa/Nairobi').format('YYYY')
         let beforeBFStats = []
         //console.log('month', currentMonth)
         if (currentMonth.toLowerCase() === 'january') {
@@ -706,7 +712,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: currentMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -727,11 +739,24 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 .subtract(1, 'M')
                 .format('MMMM')
 
+            let previousYear = Moments()
+                .tz('Africa/Nairobi')
+                .subtract(1, 'M')
+                .format('YYYY')
+
             let JanBeforeBF = await VitalModel.find({
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
                         creationMonth: previousMonth,
+                    },
+
+                    {
+                        creationMonth: previousMonth,
+                    },
+
+                    {
+                        creationYear: previousYear,
                     },
                 ],
             }).countDocuments()
@@ -740,7 +765,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: currentMonth,
+                    },
+
+                    {
+                        creationYear: previousYear,
                     },
                 ],
             }).countDocuments()
@@ -763,16 +794,32 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 .subtract(2, 'M')
                 .format('MMMM')
 
+            let janYear = Moments()
+                .tz('Africa/Nairobi')
+                .subtract(2, 'M')
+                .format('YYYY')
+
             let febMonth = Moments()
                 .tz('Africa/Nairobi')
                 .subtract(1, 'M')
                 .format('MMMM')
 
+            let febYear = Moments()
+                .tz('Africa/Nairobi')
+                .subtract(1, 'M')
+                .format('YYYY')
+
             let JanBeforeBF = await VitalModel.find({
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: janMonth,
+                    },
+
+                    {
+                        creationYear: janYear,
                     },
                 ],
             }).countDocuments()
@@ -781,7 +828,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: febMonth,
+                    },
+
+                    {
+                        creationYear: febYear,
                     },
                 ],
             }).countDocuments()
@@ -789,7 +842,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: currentMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -829,7 +888,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: janMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -838,7 +903,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: febMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -846,7 +917,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MarMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -855,7 +932,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: currentMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -903,7 +986,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: janMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -912,7 +1001,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: febMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -920,7 +1015,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MarMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -929,7 +1030,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: AprMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -938,7 +1045,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: currentMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -995,7 +1108,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: janMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1004,7 +1123,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: febMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1012,7 +1137,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MarMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1021,7 +1152,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: AprMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1030,7 +1167,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MayMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1038,7 +1181,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: currentMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1102,7 +1251,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: janMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1111,7 +1266,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: febMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1119,7 +1280,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MarMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1128,7 +1295,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: AprMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1137,7 +1310,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MayMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1145,7 +1324,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: JunMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1153,7 +1338,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: currentMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1226,7 +1417,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: janMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1235,7 +1432,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: febMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1243,7 +1446,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MarMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1252,7 +1461,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: AprMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1261,7 +1476,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MayMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1269,7 +1490,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: JunMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1277,7 +1504,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: JulMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1285,7 +1518,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: currentMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1366,7 +1605,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: janMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1375,7 +1620,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: febMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1383,7 +1634,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MarMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1392,7 +1649,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: AprMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1401,7 +1664,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MayMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1409,7 +1678,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: JunMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1425,7 +1700,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: AugMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1433,7 +1714,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: currentMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1522,7 +1809,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: janMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1531,7 +1824,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: febMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1539,7 +1838,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MarMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1548,7 +1853,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: AprMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1557,7 +1868,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MayMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1565,7 +1882,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: JunMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1573,7 +1896,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: JulMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1581,7 +1910,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: AugMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1589,7 +1924,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: SepMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1597,7 +1938,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: currentMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1694,7 +2041,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: janMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1703,7 +2056,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: febMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1711,7 +2070,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MarMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1720,7 +2085,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: AprMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1729,7 +2100,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MayMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1737,7 +2114,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: JunMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1745,7 +2128,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: JulMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1753,7 +2142,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: AugMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1761,7 +2156,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: SepMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1769,7 +2170,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: OctMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1777,7 +2184,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: currentMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1882,7 +2295,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: janMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1891,7 +2310,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: febMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1899,7 +2324,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MarMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1908,7 +2339,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: AprMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1917,7 +2354,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: MayMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1925,7 +2368,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: JunMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1933,7 +2382,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: JulMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1941,7 +2396,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: AugMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1949,7 +2410,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: SepMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1957,7 +2424,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: OctMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1965,7 +2438,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: NovMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()
@@ -1973,7 +2452,13 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
+                    },
+                    {
                         creationMonth: currentMonth,
+                    },
+
+                    {
+                        creationYear: currentYear,
                     },
                 ],
             }).countDocuments()

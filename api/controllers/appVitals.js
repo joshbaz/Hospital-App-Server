@@ -19,7 +19,9 @@ exports.addBGlucoseReadings = async (req, res, next) => {
             error.statusCode = 404
             throw error
         }
-
+        const creationDateFormat = Moments(new Date(currentDate))
+            .tz('Africa/Nairobi')
+            .format('DD-MM-YYYY')
         const Month = Moments(new Date(currentDate))
             .tz('Africa/Nairobi')
             .format('MMMM')
@@ -37,6 +39,7 @@ exports.addBGlucoseReadings = async (req, res, next) => {
             dateMeasured: currentDate,
             healthType: 'Blood Glucose',
             healthVital: glucoseValue,
+            creationDateFormat,
             creationMonth: Month,
             creationYear: Year,
             createdDate,
@@ -116,7 +119,9 @@ exports.addBPressureReadings = async (req, res, next) => {
         }
 
         let newDate = new Date(currentDate)
-
+        const creationDateFormat = Moments(newDate)
+            .tz('Africa/Nairobi')
+            .format('DD-MM-YYYY')
         const Month = Moments(newDate).tz('Africa/Nairobi').format('MMMM')
         const createdDate = Moments(newDate).tz('Africa/Nairobi')
         const Year = Moments(newDate).tz('Africa/Nairobi').format('YYYY')
@@ -130,6 +135,7 @@ exports.addBPressureReadings = async (req, res, next) => {
             dateMeasured: currentDate,
             healthType: 'Blood Pressure',
             healthVital: healthVital,
+            creationDateFormat,
             creationMonth: Month,
             creationYear: Year,
             createdDate,
@@ -171,7 +177,9 @@ exports.addFitnessReadings = async (req, res, next) => {
             error.statusCode = 404
             throw error
         }
-
+        const creationDateFormat = Moments(new Date(currentDate))
+            .tz('Africa/Nairobi')
+            .format('DD-MM-YYYY')
         const Month = Moments(currentDate).tz('Africa/Nairobi').format('MMMM')
         const createdDate = Moments(currentDate).tz('Africa/Nairobi')
         const Year = Moments(currentDate).tz('Africa/Nairobi').format('YYYY')
@@ -185,6 +193,7 @@ exports.addFitnessReadings = async (req, res, next) => {
             dateMeasured: currentDate,
             healthType: 'Fitness Activities',
             healthVital: healthVital,
+            creationDateFormat,
             creationMonth: Month,
             creationYear: Year,
             createdDate,

@@ -37,10 +37,11 @@ const vitalsSchema = mongoose.Schema(
                 },
             ],
         },
+        creationDateFormat: String,
         creationMonth: String,
         creationYear: String,
         createdDate: String,
-        vitalRecodedTime: String
+        vitalRecodedTime: String,
     },
     { timestamps: true }
 )
