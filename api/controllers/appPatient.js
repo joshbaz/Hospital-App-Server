@@ -150,6 +150,140 @@ exports.registerPatient = async (req, res, next) => {
     }
 }
 
+/** Forgot passkey */
+exports.forgotPasskey = async (req, res, next) => {
+    try {
+        const { phoneNumber } = req.body
+
+        const findPatient = await PatientModel.findOne({
+            phoneNumber: phoneNumber,
+        })
+
+        if (!findPatient) {
+            const error = new Error('User does not exist')
+            error.statusCode = 404
+            throw error
+        }
+
+        if (findPatient.verified !== true) {
+            const error = new Error('Patient not registered')
+            error.statusCode = 404
+            throw error
+        }
+
+        const otp = `${Math.floor(1000 + Math.random() * 9000)}`
+
+        findPatient.verificationToken = otp
+        await findPatient.save()
+
+        const accountSid = process.env.ACCOUNT_SID
+        const authToken = process.env.AUTH_TOKEN
+
+        const client = require('twilio')(accountSid, authToken)
+
+        client.messages
+            .create({
+                body: `Your reset code : ${otp}`,
+                from: '+12763881224',
+                to: '+254114283856',
+            })
+            .then(() => {
+                res.status(200).json({
+                    message: 'Reset Code sent to your number',
+                    phoneNumber: findPatient.phoneNumber,
+                })
+            })
+            .catch(() => {
+                const error = new Error('Error sending message')
+                error.statusCode = 404
+                throw error
+            })
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500
+        }
+        next(error)
+    }
+}
+
+/** reset verification */
+exports.resetVerify = async (req, res, next) => {
+    try {
+        const { phoneNumber, otpString } = req.body
+
+        const findPatient = await PatientModel.findOne({
+            phoneNumber: phoneNumber,
+        })
+
+        if (!findPatient) {
+            const error = new Error('User does not exist')
+            error.statusCode = 404
+            throw error
+        }
+        if (findPatient.verified !== true) {
+            const error = new Error('Account not  registered')
+            error.statusCode = 404
+            throw error
+        }
+
+        if (findPatient.verificationToken !== otpString) {
+            const error = new Error('OTP incorrect')
+            error.statusCode = 404
+            throw error
+        }
+
+        findPatient.resetAllowed = true
+
+        await findPatient.save()
+
+        res.status(200).json({
+            phoneNumber: findPatient.phoneNumber,
+            patId: findPatient.patientId,
+        })
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500
+        }
+        next(error)
+    }
+}
+
+/** reset the password */
+exports.resetPasskey = async (req, res, next) => {
+    try {
+        const { phoneNumber, patientId, password } = req.body
+
+        const findPatient = await PatientModel.findOne({
+            patientId: patientId,
+            phoneNumber: phoneNumber,
+        })
+
+        if (!findPatient) {
+            const error = new Error('User does not exist')
+            error.statusCode = 404
+            throw error
+        }
+
+        if (findPatient.resetAllowed !== true) {
+            const error = new Error('Reset Denied')
+            error.statusCode = 404
+            throw error
+        }
+        const hash = await bcrypt.hash(password, 12)
+        findPatient.password = hash
+
+        findPatient.resetAllowed = false
+        await findPatient.save()
+
+        res.status(200).json('Reset password successful')
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500
+        }
+        next(error)
+    }
+}
+
 /** registration verification */
 exports.registerVerify = async (req, res, next) => {
     try {

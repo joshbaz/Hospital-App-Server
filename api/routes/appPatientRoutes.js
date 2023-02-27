@@ -11,6 +11,12 @@ router.post('/v1/login', appPatientController.loginPatient)
 
 router.post('/v1/register', appPatientController.registerPatient)
 
+router.post('/v1/forgotpassword', appPatientController.forgotPasskey)
+
+router.post('/v1/reset/verify', appPatientController.resetVerify)
+
+router.post('/v1/reset/passkey', appPatientController.resetPasskey)
+
 router.post('/v1/register/verify', appPatientController.registerVerify)
 
 router.post(

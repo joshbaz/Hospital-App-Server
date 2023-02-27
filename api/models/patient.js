@@ -52,6 +52,7 @@ const patientSchema = mongoose.Schema(
             default: false,
         },
         verificationToken: String,
+        resetAllowed: { type: Boolean, default: false },
         createdMonth: String,
         createdYear: String,
         createdDate: String,
