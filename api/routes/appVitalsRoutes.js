@@ -37,4 +37,16 @@ router.get(
     appVitalsController.getRecentReadingVitals
 )
 
+router.get(
+    '/v1/vital/statistics/glucose',
+    isAuth,
+    appVitalsController.getStatisticalGlucoseVitals
+)
+
+router.get(
+    '/v1/vital/statistics/pressure',
+    isAuth,
+    appVitalsController.getStatisticalPressureVitals
+)
+
 module.exports = router
