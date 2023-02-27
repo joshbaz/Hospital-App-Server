@@ -199,6 +199,7 @@ exports.registerVerify = async (req, res, next) => {
             id: findPatient._id.toString(),
             phoneNumber: findPatient.phoneNumber,
             fullname: findPatient.patientName,
+            patId: findPatient.patientId,
         })
     } catch (error) {
         if (!error.statusCode) {
