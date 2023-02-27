@@ -122,20 +122,26 @@ exports.registerPatient = async (req, res, next) => {
 
         const accountSid = process.env.ACCOUNT_SID
         const authToken = process.env.AUTH_TOKEN
-        const verifySid = process.env.VERIFY_SID
 
         const client = require('twilio')(accountSid, authToken)
 
-        // await client.messages.create({
-        //     body: `verification code : ${otp}`,
-        //     from: '+256787785114',
-        //     to: findPatient.phoneNumber,
-        // })
-
-        res.status(200).json({
-            message: 'Verification Code sent to your number',
-            phoneNumber: findPatient.phoneNumber,
-        })
+        client.messages
+            .create({
+                body: `verification code : ${otp}`,
+                from: '+12763881224',
+                to: '+254114283856',
+            })
+            .then(() => {
+                res.status(200).json({
+                    message: 'Verification Code sent to your number',
+                    phoneNumber: findPatient.phoneNumber,
+                })
+            })
+            .catch(() => {
+                const error = new Error('Error sending message')
+                error.statusCode = 404
+                throw error
+            })
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500
@@ -274,14 +280,12 @@ exports.patientEditDetails = async (req, res, next) => {
     }
 }
 
-
 /** change password */
 exports.updatePassword = async (req, res, next) => {
     try {
         const { oldPassword, newPassword } = req.body
         const findOneUser = await PatientModel.findById(req.userId)
 
-        
         if (!findOneUser) {
             const error = new Error('User does not exist')
             error.statusCode = 404
@@ -313,4 +317,3 @@ exports.updatePassword = async (req, res, next) => {
         next(error)
     }
 }
-
