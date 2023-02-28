@@ -9,7 +9,7 @@ const isAdminAuth = require('../middleware/isAdminAuth')
 
 router.post(
     '/v1/create',
-    isAdminAuth,
+    //isAdminAuth,
     [
         body('email')
             .isEmail()

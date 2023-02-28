@@ -41,7 +41,7 @@ exports.loginPatient = async (req, res, next) => {
             phoneNumber: phoneNumber,
         })
 
-        console.log('trrrrrrrrr')
+        //console.log('trrrrrrrrr')
 
         if (!findOneUser) {
             console.log('errro')

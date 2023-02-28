@@ -94,7 +94,7 @@ exports.createPrescription = async (req, res, next) => {
         //create the new Patient Id
         const findIdTrackNumber =
             await PrescriptionIdTrackModel.find().countDocuments()
-        console.log(findIdTrackNumber, 'findIdTrackNumber')
+        // console.log(findIdTrackNumber, 'findIdTrackNumber')
         if (findIdTrackNumber < 1) {
             const newIdTrack = new PrescriptionIdTrackModel({
                 _id: new mongoose.Types.ObjectId(),
@@ -216,7 +216,7 @@ exports.getIndividualVitalSummary = async (req, res, next) => {
     try {
         const patientUniqueId = req.params.id
         const Month = Moments().tz('Africa/Nairobi').format('MMMM')
-
+        const Year = Moments().tz('Africa/Nairobi').format('YYYY')
         /** get previous month */
         const getNumber = Moments().tz('Africa/Nairobi').month()
         const prevNum = getNumber - 1
@@ -225,25 +225,34 @@ exports.getIndividualVitalSummary = async (req, res, next) => {
                 ? Moments().tz('Africa/Nairobi').month(prevNum).format('MMMM')
                 : Moments().tz('Africa/Nairobi').month(11).format('MMMM')
 
+        const getPrevYear =
+            prevNum !== -1
+                ? Moments().tz('Africa/Nairobi').month(prevNum).format('YYYY')
+                : Moments().tz('Africa/Nairobi').month(11).format('YYYY')
+
         // previous calculated month
         const BeforeBF = await VitalModel.find({
             patientUniqueId: patientUniqueId,
             creationMonth: Month,
+            creationYear: Year,
             vitalTimelineType: 'Before Breakfast',
         }).countDocuments()
         const BeforeLunch = await VitalModel.find({
             patientUniqueId: patientUniqueId,
             creationMonth: Month,
+            creationYear: Year,
             vitalTimelineType: 'Before Lunch',
         }).countDocuments()
         const BeforeDinner = await VitalModel.find({
             patientUniqueId: patientUniqueId,
             creationMonth: Month,
+            creationYear: Year,
             vitalTimelineType: 'Before Dinner',
         }).countDocuments()
         const BeforeBedtime = await VitalModel.find({
             patientUniqueId: patientUniqueId,
             creationMonth: Month,
+            creationYear: Year,
             vitalTimelineType: 'Before Bedtime',
         }).countDocuments()
 
@@ -252,21 +261,25 @@ exports.getIndividualVitalSummary = async (req, res, next) => {
         const PreviousBeforeBF = await VitalModel.find({
             patientUniqueId: patientUniqueId,
             creationMonth: getPrevMonth,
+            creationYear: getPrevYear,
             vitalTimelineType: 'Before Breakfast',
         }).countDocuments()
         const PreviousBeforeLunch = await VitalModel.find({
             patientUniqueId: patientUniqueId,
             creationMonth: getPrevMonth,
+            creationYear: getPrevYear,
             vitalTimelineType: 'Before Lunch',
         }).countDocuments()
         const PreviousBeforeDinner = await VitalModel.find({
             patientUniqueId: patientUniqueId,
             creationMonth: getPrevMonth,
+            creationYear: getPrevYear,
             vitalTimelineType: 'Before Dinner',
         }).countDocuments()
         const PreviousBeforeBedtime = await VitalModel.find({
             patientUniqueId: patientUniqueId,
             creationMonth: getPrevMonth,
+            creationYear: getPrevYear,
             vitalTimelineType: 'Before Bedtime',
         }).countDocuments()
 
@@ -312,7 +325,7 @@ exports.getIndividualPrescriptionSummary = async (req, res, next) => {
     try {
         const patientUniqueId = req.params.id
         const Month = Moments().tz('Africa/Nairobi').format('MMMM')
-
+        const Year = Moments().tz('Africa/Nairobi').format('YYYY')
         /** get previous month */
         const getNumber = Moments().tz('Africa/Nairobi').month()
         const prevNum = getNumber - 1
@@ -321,24 +334,33 @@ exports.getIndividualPrescriptionSummary = async (req, res, next) => {
                 ? Moments().tz('Africa/Nairobi').month(prevNum).format('MMMM')
                 : Moments().tz('Africa/Nairobi').month(11).format('MMMM')
 
+        const getPrevYear =
+            prevNum !== -1
+                ? Moments().tz('Africa/Nairobi').month(prevNum).format('YYYY')
+                : Moments().tz('Africa/Nairobi').month(11).format('YYYY')
+
         // previous calculated month
         const ActivePrescription = await PrescriptionModel.find({
             patientUniqueId: patientUniqueId,
             creationMonth: Month,
+            creationYear: Year,
         }).countDocuments()
         const RefillRequests = await RefillModel.find({
             patientUniqueId: patientUniqueId,
             creationMonth: Month,
+            creationYear: Year,
         }).countDocuments()
 
         //month before calculated month
         const PreviousActivePrescription = await PrescriptionModel.find({
             patientUniqueId: patientUniqueId,
             creationMonth: getPrevMonth,
+            creationYear: getPrevYear,
         }).countDocuments()
         const PreviousRefillRequests = await RefillModel.find({
             patientUniqueId: patientUniqueId,
             creationMonth: getPrevMonth,
+            creationYear: getPrevYear,
         }).countDocuments()
 
         //before brakfast
@@ -414,7 +436,7 @@ exports.getAllFAVitals = async (req, res, next) => {
             healthType: 'Fitness Activities',
         }).populate('patientUniqueId')
 
-        console.log('fitness', getFAVitals)
+        // console.log('fitness', getFAVitals)
         res.status(200).json({
             items: getFAVitals,
         })
@@ -430,7 +452,7 @@ exports.getAllFAVitals = async (req, res, next) => {
 exports.getAllEListVitals = async (req, res, next) => {
     try {
         const getEListVitals = await VitalModel.find({
-            status: 'critical Low',
+            status: { $in: ['critical low', 'critical high', 'high', 'low'] },
         }).populate('patientUniqueId')
 
         res.status(200).json({
@@ -748,7 +770,6 @@ exports.getVitalsMonthSummary = async (req, res, next) => {
                 $and: [
                     {
                         vitalTimelineType: 'Before Breakfast',
-                        creationMonth: previousMonth,
                     },
 
                     {
@@ -2533,57 +2554,92 @@ exports.getDashReportSummary = async (req, res, next) => {
         //last 7 days
         const Date1 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(1, 'd')
-            .format('DD/MMM/Y')
+            .subtract(0, 'd')
+            .format('DD/MMM/YYYY')
         const Date2 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(2, 'd')
-            .format('DD/MMM/Y')
+            .subtract(1, 'd')
+            .format('DD/MMM/YYYY')
         const Date3 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(3, 'd')
-            .format('DD/MMM/Y')
+            .subtract(2, 'd')
+            .format('DD/MMM/YYYY')
         const Date4 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(4, 'd')
-            .format('DD/MMM/Y')
+            .subtract(3, 'd')
+            .format('DD/MMM/YYYY')
         const Date5 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(5, 'd')
-            .format('DD/MMM/Y')
+            .subtract(4, 'd')
+            .format('DD/MMM/YYYY')
         const Date6 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(6, 'd')
-            .format('DD/MMM/Y')
+            .subtract(5, 'd')
+            .format('DD/MMM/YYYY')
         const Date7 = Moments()
             .tz('Africa/Nairobi')
-            .subtract(7, 'd')
-            .format('DD/MMM/Y')
+            .subtract(6, 'd')
+            .format('DD/MMM/YYYY')
 
         // total patients
         const Patients = await PatientModel.find({
-            $or: [
-                { dateJoined: Date1 },
-                { dateJoined: Date2 },
-                { dateJoined: Date3 },
-                { dateJoined: Date4 },
-                { dateJoined: Date5 },
-                { dateJoined: Date6 },
-                { dateJoined: Date7 },
+            $and: [
+                {
+                    dateJoined: {
+                        $in: [Date1, Date2, Date3, Date4, Date5, Date6, Date7],
+                    },
+                },
             ],
         }).countDocuments()
+
+        const RDate1 = Moments()
+            .tz('Africa/Nairobi')
+            .subtract(0, 'd')
+            .format('DD-MM-YYYY')
+        const RDate2 = Moments()
+            .tz('Africa/Nairobi')
+            .subtract(1, 'd')
+            .format('DD-MM-YYYY')
+        const RDate3 = Moments()
+            .tz('Africa/Nairobi')
+            .subtract(2, 'd')
+            .format('DD-MM-YYYY')
+        const RDate4 = Moments()
+            .tz('Africa/Nairobi')
+            .subtract(3, 'd')
+            .format('DD-MM-YYYY')
+        const RDate5 = Moments()
+            .tz('Africa/Nairobi')
+            .subtract(4, 'd')
+            .format('DD-MM-YYYY')
+        const RDate6 = Moments()
+            .tz('Africa/Nairobi')
+            .subtract(5, 'd')
+            .format('DD-MM-YYYY')
+        const RDate7 = Moments()
+            .tz('Africa/Nairobi')
+            .subtract(6, 'd')
+            .format('DD-MM-YYYY')
 
         //total blood reports
         const BloodReports = await VitalModel.find({
             $and: [
                 {
-                    createdDate: {
-                        $in: [Date1, Date2, Date3, Date4, Date5, Date6, Date7],
+                    creationDateFormat: {
+                        $in: [
+                            RDate1,
+                            RDate2,
+                            RDate3,
+                            RDate4,
+                            RDate5,
+                            RDate6,
+                            RDate7,
+                        ],
                     },
                 },
                 {
                     healthType: {
-                        $in: ['Blood Pressure', 'Blood Sugar'],
+                        $in: ['Blood Pressure', 'Blood Glucose'],
                     },
                 },
             ],
@@ -2593,8 +2649,16 @@ exports.getDashReportSummary = async (req, res, next) => {
         const FitnessReports = await VitalModel.find({
             $and: [
                 {
-                    createdDate: {
-                        $in: [Date1, Date2, Date3, Date4, Date5, Date6, Date7],
+                    creationDateFormat: {
+                        $in: [
+                            RDate1,
+                            RDate2,
+                            RDate3,
+                            RDate4,
+                            RDate5,
+                            RDate6,
+                            RDate7,
+                        ],
                     },
                 },
                 {
@@ -2609,13 +2673,21 @@ exports.getDashReportSummary = async (req, res, next) => {
         const EmergencyList = await VitalModel.find({
             $and: [
                 {
-                    createdDate: {
-                        $in: [Date1, Date2, Date3, Date4, Date5, Date6, Date7],
+                    creationDateFormat: {
+                        $in: [
+                            RDate1,
+                            RDate2,
+                            RDate3,
+                            RDate4,
+                            RDate5,
+                            RDate6,
+                            RDate7,
+                        ],
                     },
                 },
                 {
                     status: {
-                        $in: ['Critical Low', 'Critical High'],
+                        $in: ['critical low', 'critical high', 'high', 'low'],
                     },
                 },
             ],
@@ -2640,7 +2712,7 @@ exports.getDashPieGraphSummary = async (req, res, next) => {
     try {
         const Month = Moments().tz('Africa/Nairobi').format('MMMM')
         const Year = Moments().tz('Africa/Nairobi').format('YYYY')
-        console.log('year', Year, Month)
+        // console.log('year', Year, Month)
         //total blood Pressure reports
         const BloodPressureReports = await VitalModel.find({
             $and: [
@@ -2666,18 +2738,18 @@ exports.getDashPieGraphSummary = async (req, res, next) => {
         const BloodSugarReports = await VitalModel.find({
             $and: [
                 {
-                    createdMonth: {
+                    creationMonth: {
                         $in: [Month],
                     },
                 },
                 {
-                    createdYear: {
+                    creationYear: {
                         $in: [Year],
                     },
                 },
                 {
                     healthType: {
-                        $in: ['Blood Sugar'],
+                        $in: ['Blood Glucose'],
                     },
                 },
             ],
@@ -2687,12 +2759,12 @@ exports.getDashPieGraphSummary = async (req, res, next) => {
         const FitnessReports = await VitalModel.find({
             $and: [
                 {
-                    createdMonth: {
+                    creationMonth: {
                         $in: [Month],
                     },
                 },
                 {
-                    createdYear: {
+                    creationYear: {
                         $in: [Year],
                     },
                 },
@@ -2724,9 +2796,9 @@ exports.getDashPieGraphSummary = async (req, res, next) => {
                     y: isNaN(faPercent) ? 0 : faPercent,
                 },
             ],
-            BloodPReports: isNaN(bpPercent) ? 0 : bpPercent,
-            BloodSReports: isNaN(bsPercent) ? 0 : bsPercent,
-            FitnessReports: isNaN(faPercent) ? 0 : faPercent,
+            BloodPReports: isNaN(bpPercent) ? 0 : bpPercent.toFixed(2),
+            BloodSReports: isNaN(bsPercent) ? 0 : bsPercent.toFixed(2),
+            FitnessReports: isNaN(faPercent) ? 0 : faPercent.toFixed(2),
             overallTotal,
         })
     } catch (error) {
@@ -2752,7 +2824,7 @@ exports.getDashBarGraphSummary = async (req, res, next) => {
             prevNum !== -1
                 ? Moments().tz('Africa/Nairobi').month(prevNum).format('YYYY')
                 : Moments().tz('Africa/Nairobi').month(11).format('YYYY')
-        console.log('PrevYear', PrevYear, getPrevMonth)
+        //console.log('PrevYear', PrevYear, getPrevMonth)
 
         const CurrentPatientReports = await PatientModel.find({
             $and: [

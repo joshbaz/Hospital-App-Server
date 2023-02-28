@@ -13,6 +13,7 @@ const vitalsSchema = mongoose.Schema(
         vitalTimelineType: {
             type: String,
         },
+        pulseValue: { type: String },
         dateMeasured: {
             type: String,
             required: true,
@@ -40,7 +41,9 @@ const vitalsSchema = mongoose.Schema(
         creationDateFormat: String,
         creationMonth: String,
         creationYear: String,
-        createdDate: String,
+        createdDate: {
+            type: Date,
+        },
         vitalRecodedTime: String,
     },
     { timestamps: true }

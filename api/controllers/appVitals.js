@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const VitalModel = require('../models/vital')
 const Moments = require('moment-timezone')
+const io = require('../../socket')
 
 /** patient onboarding */
 exports.addBGlucoseReadings = async (req, res, next) => {
@@ -29,7 +30,37 @@ exports.addBGlucoseReadings = async (req, res, next) => {
         const Year = Moments(new Date(currentDate))
             .tz('Africa/Nairobi')
             .format('YYYY')
-        let status = 'normal'
+
+        //statuses
+        /**
+         *  normal - 72 >= 108
+         *  concern(borderline) - 108 >= 180
+         * low - 72 - 49
+         *  critical low - 50 and below
+         *  high - 181 - 314
+         *  critical high - 315 >
+         *
+         * N/A
+         *
+         */
+
+        let glucoseValueInt = parseFloat(glucoseValue)
+
+        let status = ''
+
+        if (glucoseValueInt <= 50) {
+            status = 'critical low'
+        } else if (glucoseValueInt >= 49 && glucoseValueInt <= 72) {
+            status = 'low'
+        } else if (glucoseValueInt >= 72 && glucoseValueInt <= 108) {
+            status = 'normal'
+        } else if (glucoseValueInt >= 109 && glucoseValueInt <= 180) {
+            status = 'concern'
+        } else if (glucoseValueInt >= 181 && glucoseValueInt <= 314) {
+            status = 'high'
+        } else if (glucoseValueInt >= 315) {
+            status = 'critical high'
+        }
 
         const newVitals = new VitalModel({
             _id: new mongoose.Types.ObjectId(),
@@ -48,6 +79,10 @@ exports.addBGlucoseReadings = async (req, res, next) => {
         })
 
         let saveVitals = await newVitals.save()
+
+        io.getIO().emit('update-dash-vitals', {
+            actions: 'request-vitals-bg',
+        })
 
         res.status(200).json({
             message: 'B-Glucose Vitals recorded',
@@ -125,7 +160,63 @@ exports.addBPressureReadings = async (req, res, next) => {
         const Month = Moments(newDate).tz('Africa/Nairobi').format('MMMM')
         const createdDate = Moments(newDate).tz('Africa/Nairobi')
         const Year = Moments(newDate).tz('Africa/Nairobi').format('YYYY')
-        let status = 'normal'
+
+        //statuses
+        //systolic
+        /**
+         *  normal - 91 < 130
+         *  concern(borderline) - 131 >= 140
+         * low - 51 - 90
+         *  critical low - 50 and below
+         *  high - 141 - 160
+         *  critical high - 161 >
+         *
+         * N/A
+         *
+         */
+
+        //diastolic
+        /**
+         *  normal - 61 >= 80
+         *  concern(borderline) - 81 >= 90
+         * low - 40 - 60
+         *  critical low - 39 and below
+         *  high - 91 - 100
+         *  critical high - 101 >
+         *
+         * N/A
+         *
+         */
+        let sysValueInt = parseFloat(sysValue)
+        let diaValueInt = parseFloat(diaValue)
+        let status = ''
+
+        if (sysValueInt <= 50) {
+            status = 'critical low'
+        } else if (sysValueInt >= 51 && sysValueInt <= 90) {
+            status = 'low'
+        } else if (sysValueInt >= 91 && sysValueInt <= 130) {
+            //check the diastolic
+            if (diaValueInt < 39) {
+                status = 'critical low'
+            } else if (diaValueInt >= 40 && diaValueInt <= 60) {
+                status = 'low'
+            } else if (diaValueInt >= 61 && diaValueInt <= 80) {
+                status = 'normal'
+            } else if (diaValueInt >= 81 && diaValueInt <= 90) {
+                status = 'concern'
+            } else if (diaValueInt >= 91 && diaValueInt <= 100) {
+                status = 'high'
+            } else if (diaValueInt >= 101) {
+                status = 'critical high'
+            }
+        } else if (sysValueInt >= 131 && sysValueInt <= 140) {
+            status = 'concern'
+        } else if (sysValueInt >= 141 && sysValueInt <= 160) {
+            status = 'high'
+        } else if (sysValueInt >= 161) {
+            status = 'critical high'
+        }
 
         const newVitals = new VitalModel({
             _id: new mongoose.Types.ObjectId(),
@@ -145,6 +236,10 @@ exports.addBPressureReadings = async (req, res, next) => {
         })
 
         let saveVitals = await newVitals.save()
+
+        io.getIO().emit('update-dash-vitals', {
+            actions: 'request-vitals-bp',
+        })
 
         res.status(200).json({
             message: 'B-Pressure Vitals recorded',
@@ -183,7 +278,7 @@ exports.addFitnessReadings = async (req, res, next) => {
         const Month = Moments(currentDate).tz('Africa/Nairobi').format('MMMM')
         const createdDate = Moments(currentDate).tz('Africa/Nairobi')
         const Year = Moments(currentDate).tz('Africa/Nairobi').format('YYYY')
-        let status = 'normal'
+        let status = 'N/A'
 
         const newVitals = new VitalModel({
             _id: new mongoose.Types.ObjectId(),
@@ -202,6 +297,10 @@ exports.addFitnessReadings = async (req, res, next) => {
         })
 
         let saveVitals = await newVitals.save()
+
+        io.getIO().emit('update-dash-vitals', {
+            actions: 'request-vitals-fa',
+        })
 
         res.status(200).json({
             message: 'Fitness Activities recorded',
@@ -398,7 +497,9 @@ exports.getStatisticalGlucoseVitals = async (req, res, next) => {
                     },
                 },
             ],
-        }).sort({ createdAt: 1 })
+        }).sort({ createdDate: 1 })
+
+        //console.log('week', findWeekBGlucoseVitals, startOfWeek, endOfWeek)
 
         // console.log('find day glucose vitals', findBGlucoseVitals)
 
@@ -503,7 +604,7 @@ exports.getStatisticalGlucoseVitals = async (req, res, next) => {
         }
 
         res.status(200).json({
-            avgVital: averageVital,
+            avgVital: averageVital.toFixed(3),
             lowestVital: lowestVital,
             highestVital: highestVital,
             todayEntries: findBGlucoseVitals,
@@ -591,7 +692,7 @@ exports.getStatisticalPressureVitals = async (req, res, next) => {
                     },
                 },
             ],
-        }).sort({ createdAt: 1 })
+        }).sort({ createdDate: 1 })
 
         // console.log('find day pressure vitals', findBPressureVitals)
 
@@ -790,7 +891,9 @@ exports.getStatisticalPressureVitals = async (req, res, next) => {
         //console.log('line entries', lineEntries2, lineEntries1)
 
         res.status(200).json({
-            avgVital: `${averageVitalSys}/${averageVitalDia}`,
+            avgVital: `${averageVitalSys.toFixed(3)}/${averageVitalDia.toFixed(
+                0
+            )}`,
             lowestVital: `${lowestVitalSys}/${lowestVitalDia}`,
             highestVital: `${highestVitalSys}/${highestVitalDia}`,
             todayEntries: findBPressureVitals,
