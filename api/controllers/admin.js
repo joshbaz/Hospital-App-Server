@@ -52,7 +52,7 @@ exports.loginAdmin = async (req, res, next) => {
         const { email, password } = req.body
 
         const findOneUser = await AdminModel.findOne({ email: email })
-        console.log('token ', findOneUser)
+       // console.log('token ', findOneUser)
         if (!findOneUser) {
             const error = new Error('Email does not exist')
             error.statusCode = 404
@@ -63,7 +63,7 @@ exports.loginAdmin = async (req, res, next) => {
             password,
             findOneUser.password
         )
-        console.log('comparePassword ', comparePassword)
+        //console.log('comparePassword ', comparePassword)
 
         if (!comparePassword) {
             const error = new Error('Wrong Password')
@@ -79,7 +79,7 @@ exports.loginAdmin = async (req, res, next) => {
             process.env.SECRET,
             { expiresIn: '24h' }
         )
-        console.log('token ', token)
+        //console.log('token ', token)
 
         res.status(200).json({
             token: token,
@@ -100,7 +100,7 @@ exports.getAllUserDetails = async (req, res, next) => {
     try {
         const findOneUser = await AdminModel.findById(req.userId)
 
-        console.log('req.userId', req.userId)
+        //console.log('req.userId', req.userId)
         if (!findOneUser) {
             const error = new Error('User does not exist')
             error.statusCode = 404
@@ -132,7 +132,7 @@ exports.updateDetails = async (req, res, next) => {
         const { fullname, mobileNumber, jobPosition } = req.body
         const findOneUser = await AdminModel.findById(req.userId)
 
-        console.log('req.userId', req.userId)
+        //console.log('req.userId', req.userId)
         if (!findOneUser) {
             const error = new Error('User does not exist')
             error.statusCode = 404
@@ -160,7 +160,7 @@ exports.updateSettings = async (req, res, next) => {
         const { emailEmergency, emailNewPatients } = req.body
         const findOneUser = await AdminModel.findById(req.userId)
 
-        console.log('req', req.userId)
+        //console.log('req', req.userId)
         if (!findOneUser) {
             const error = new Error('User does not exist')
             error.statusCode = 404
@@ -187,7 +187,7 @@ exports.updatePassword = async (req, res, next) => {
         const { oldPassword, newPassword } = req.body
         const findOneUser = await AdminModel.findById(req.userId)
 
-        console.log('req.userId', req.userId)
+        //console.log('req.userId', req.userId)
         if (!findOneUser) {
             const error = new Error('User does not exist')
             error.statusCode = 404

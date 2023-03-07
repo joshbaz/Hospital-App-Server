@@ -18,16 +18,18 @@ router.put(
     patientController.editPrescription
 )
 
+router.post('/v1/refill/create', isAdminAuth, patientController.createRefill)
+
 router.get('/v1/all', isAdminAuth, patientController.getAllPatients)
 
 router.get(
-    '/v1/individual/vitalsummary/:id',
+    '/v1/individual/vitalsummary/:id/:type',
     isAdminAuth,
     patientController.getIndividualVitalSummary
 )
 
 router.get(
-    '/v1/individual/prescriptionsummary/:id',
+    '/v1/individual/prescriptionsummary/:id/:type',
     isAdminAuth,
     patientController.getIndividualPrescriptionSummary
 )
@@ -64,7 +66,7 @@ router.get(
 
 /** month vitals summary */
 router.get(
-    '/v1/main/monthlyvitals/summary',
+    '/v1/main/monthlyvitals/summary/:type',
     isAdminAuth,
     patientController.getVitalsMonthSummary
 )
@@ -79,14 +81,14 @@ router.get(
 
 /** dashboard graph data */
 router.get(
-    '/v1/dashboard/graph/circular/summary',
+    '/v1/dashboard/graph/circular/summary/:type',
     isAdminAuth,
     patientController.getDashPieGraphSummary
 )
 
 /** dashboard graph data */
 router.get(
-    '/v1/dashboard/graph/bar/summary',
+    '/v1/dashboard/graph/bar/summary/:type',
     isAdminAuth,
     patientController.getDashBarGraphSummary
 )

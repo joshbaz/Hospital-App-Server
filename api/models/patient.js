@@ -44,9 +44,10 @@ const patientSchema = mongoose.Schema(
             default: '',
         },
         dateJoined: {
-            type: String,
-            required: true,
+            type: Date,
         },
+        joinedMonth: { type: String },
+        joinedYear: { type: String },
         verified: {
             type: Boolean,
             default: false,
@@ -55,7 +56,9 @@ const patientSchema = mongoose.Schema(
         resetAllowed: { type: Boolean, default: false },
         createdMonth: String,
         createdYear: String,
-        createdDate: String,
+        createdDate: {
+            type: Date,
+        },
     },
     { timestamps: true }
 )

@@ -2,9 +2,9 @@ const PatientModel = require('../models/patient')
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-
+const io = require('../../socket')
 require('dotenv').config()
-
+const Moments = require('moment-timezone')
 /** all details */
 exports.getAllUserDetails = async (req, res, next) => {
     try {
@@ -44,7 +44,7 @@ exports.loginPatient = async (req, res, next) => {
         //console.log('trrrrrrrrr')
 
         if (!findOneUser) {
-            console.log('errro')
+            //console.log('errro')
             const error = new Error('User with that Number does not exist')
             error.statusCode = 404
             throw error
@@ -72,8 +72,7 @@ exports.loginPatient = async (req, res, next) => {
                 phoneNumber: findOneUser.phoneNumber,
                 userId: findOneUser._id,
             },
-            process.env.SECRET,
-            { expiresIn: '24h' }
+            process.env.SECRET
         )
         res.status(200).json({
             token: token,
@@ -309,16 +308,27 @@ exports.registerVerify = async (req, res, next) => {
             error.statusCode = 404
             throw error
         }
-
+        let currentDate = Moments(new Date()).tz('Africa/Nairobi')
+        let joinedMonth = Moments(new Date())
+            .tz('Africa/Nairobi')
+            .format('MMMM')
+        let joinedYear = Moments(new Date()).tz('Africa/Nairobi').format('YYYY')
         findPatient.password = findPatient.unVerifiedPassword
         findPatient.verificationToken = ''
         findPatient.verified = true
         findPatient.platform = platform
+        findPatient.dateJoined = currentDate
+        findPatient.joinedMonth = joinedMonth
+        findPatient.joinedYear = joinedYear
+
         await findPatient.save()
 
         findPatient.unVerifiedPassword = ''
         await findPatient.save()
 
+        io.getIO().emit('update-dash-vitals', {
+            actions: 'request-new-patient',
+        })
         const token = jwt.sign(
             {
                 phoneNumber: findPatient.phoneNumber,

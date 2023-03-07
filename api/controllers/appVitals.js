@@ -84,6 +84,23 @@ exports.addBGlucoseReadings = async (req, res, next) => {
             actions: 'request-vitals-bg',
         })
 
+        io.getIO().emit('update-dash-patient', {
+            actions: 'request-vital-pull',
+            data: findPatient._id,
+        })
+
+        if (
+            status === 'low' ||
+            status === 'high' ||
+            status === 'critical high' ||
+            status === 'critical low'
+        ) {
+            io.getIO().emit('update-elist-vitals', {
+                actions: 'request-vitals-elist',
+            })
+        } else {
+        }
+
         res.status(200).json({
             message: 'B-Glucose Vitals recorded',
             savedVitals: saveVitals._id,
@@ -241,6 +258,23 @@ exports.addBPressureReadings = async (req, res, next) => {
             actions: 'request-vitals-bp',
         })
 
+         io.getIO().emit('update-dash-patient', {
+             actions: 'request-vital-pull',
+             data: findPatient._id,
+         })
+
+        if (
+            status === 'low' ||
+            status === 'high' ||
+            status === 'critical high' ||
+            status === 'critical low'
+        ) {
+            io.getIO().emit('update-elist-vitals', {
+                actions: 'request-vitals-elist',
+            })
+        } else {
+        }
+
         res.status(200).json({
             message: 'B-Pressure Vitals recorded',
             savedVitals: saveVitals._id,
@@ -302,6 +336,11 @@ exports.addFitnessReadings = async (req, res, next) => {
             actions: 'request-vitals-fa',
         })
 
+         io.getIO().emit('update-dash-patient', {
+             actions: 'request-vital-pull',
+             data: findPatient._id,
+         })
+
         res.status(200).json({
             message: 'Fitness Activities recorded',
             savedVitals: saveVitals._id,
@@ -329,7 +368,7 @@ exports.getRecentReadingVitals = async (req, res, next) => {
             .tz('Africa/Nairobi')
             .endOf('week')
             .toString()
-        console.log('start of week', startOfWeek, endOfWeek)
+        //console.log('start of week app readings', startOfWeek, endOfWeek)
         const endOfDay = Moments().tz('Africa/Nairobi').endOf('day').toString()
         const Month = Moments().tz('Africa/Nairobi').format('MMMM')
         const Year = Moments().tz('Africa/Nairobi').format('YYYY')
@@ -636,7 +675,7 @@ exports.getStatisticalPressureVitals = async (req, res, next) => {
             .tz('Africa/Nairobi')
             .endOf('isoWeek')
             .toString()
-        console.log('start of week', startOfWeek, endOfWeek)
+       // console.log('start of week', startOfWeek, endOfWeek)
 
         const endOfDay = Moments().tz('Africa/Nairobi').endOf('day').toString()
         const Month = Moments().tz('Africa/Nairobi').format('MMMM')

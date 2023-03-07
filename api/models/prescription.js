@@ -19,11 +19,16 @@ const prescriptionSchema = mongoose.Schema(
         drugclass: {
             type: String,
         },
-        lastPrescribed: {
+        prescribed: {
             type: String,
+            required: true,
+        },
+        lastPrescribed: {
+            type: Date,
         },
         status: {
             type: String,
+            default: 'inactive',
         },
         refillRequest: [
             {
@@ -36,6 +41,7 @@ const prescriptionSchema = mongoose.Schema(
         createdMonth: {
             type: String,
         },
+        createdYear: String,
     },
     { timestamps: true }
 )

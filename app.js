@@ -78,7 +78,7 @@ mongoose
             })
 
             io.on('connection', (socket) => {
-                console.log('client connected')
+                //console.log('client connected')
                 socket.on('disconnect', () => {
                     console.log('user disconnected')
                 })

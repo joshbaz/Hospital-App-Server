@@ -15,8 +15,8 @@ const refillRequestSchema = mongoose.Schema(
         },
         amount: Number,
         createdMonth: String,
-        createdDate: String,
-        current: String,
+        createdDate: Date,
+        createdYear: String,
     },
     { timestamps: true }
 )
