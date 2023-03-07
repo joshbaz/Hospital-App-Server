@@ -130,7 +130,7 @@ exports.createPrescription = async (req, res, next) => {
             actions: 'request-prescription-pull',
             data: getPatient._id,
         })
-        res.status(201).json(`prescription created created`)
+        res.status(201).json(`prescription created`)
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500
@@ -772,10 +772,10 @@ exports.getIndividualPrescriptionSummary = async (req, res, next) => {
             res.status(200).json({
                 activePrescription_Percent: isNaN(activePrescription_Percent)
                     ? 0
-                    : activePrescription_Percent,
+                    : activePrescription_Percent.toFixed(0),
                 refillRequests_Percent: isNaN(refillRequests_Percent)
                     ? 0
-                    : refillRequests_Percent,
+                    : refillRequests_Percent.toFixed(0),
 
                 ActivePrescription,
                 RefillRequests,
@@ -1108,16 +1108,18 @@ exports.getGeneralVitalSummary = async (req, res, next) => {
             100
 
         res.status(200).json({
-            beforeBF_Percent: isNaN(beforeBF_Percent) ? 0 : beforeBF_Percent,
+            beforeBF_Percent: isNaN(beforeBF_Percent)
+                ? 0
+                : beforeBF_Percent.toFixed(0),
             beforeLunch_Percent: isNaN(beforeLunch_Percent)
                 ? 0
-                : beforeLunch_Percent,
+                : beforeLunch_Percent.toFixed(0),
             beforeDinner_Percent: isNaN(beforeDinner_Percent)
                 ? 0
-                : beforeDinner_Percent,
+                : beforeDinner_Percent.toFixed(0),
             beforeBedtime_Percent: isNaN(beforeBedtime_Percent)
                 ? 0
-                : beforeBedtime_Percent,
+                : beforeBedtime_Percent.toFixed(0),
             BeforeBF,
             BeforeLunch,
             BeforeDinner,
