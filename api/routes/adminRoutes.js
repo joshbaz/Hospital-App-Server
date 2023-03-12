@@ -39,4 +39,11 @@ router.put('/v1/update/details', isAdminAuth, adminController.updateDetails)
 router.put('/v1/update/settings', isAdminAuth, adminController.updateSettings)
 
 router.put('/v1/update/passkey', isAdminAuth, adminController.updatePassword)
+
+/** resetting passwords */
+router.put('/v1/forgotpasskey', adminController.forgotPasskey)
+
+router.get('/v1/verifyreset/:token', adminController.verifyResetTk)
+
+router.put('/v1/resetpassword/:token', adminController.resetPassword)
 module.exports = router

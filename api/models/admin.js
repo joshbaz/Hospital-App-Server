@@ -40,6 +40,8 @@ const adminSchema = mongoose.Schema(
             required: true,
             default: false,
         },
+        resetToken: String,
+        resetTokenExpiration: Date,
     },
     { timestamps: true }
 )

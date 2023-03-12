@@ -524,6 +524,7 @@ exports.getIndividualVitalSummary = async (req, res, next) => {
                     },
                 ],
             }).countDocuments()
+
             const PreviousBeforeDinner = await VitalModel.find({
                 $and: [
                     {
@@ -540,6 +541,7 @@ exports.getIndividualVitalSummary = async (req, res, next) => {
                     },
                 ],
             }).countDocuments()
+
             const PreviousBeforeBedtime = await VitalModel.find({
                 $and: [
                     {
@@ -559,19 +561,23 @@ exports.getIndividualVitalSummary = async (req, res, next) => {
 
             //before brakfast
             let beforeBF_Percent =
-                ((BeforeBF - PreviousBeforeBF) / PreviousBeforeBF) * 100
+                ((BeforeBF - PreviousBeforeBF) /
+                    (PreviousBeforeBF > 0 ? PreviousBeforeBF : 1)) *
+                100
             //before lunch
             let beforeLunch_Percent =
-                ((BeforeLunch - PreviousBeforeLunch) / PreviousBeforeLunch) *
+                ((BeforeLunch - PreviousBeforeLunch) /
+                    (PreviousBeforeLunch > 0 ? PreviousBeforeLunch : 1)) *
                 100
             //before dinner
             let beforeDinner_Percent =
-                ((BeforeDinner - PreviousBeforeDinner) / PreviousBeforeDinner) *
+                ((BeforeDinner - PreviousBeforeDinner) /
+                    (PreviousBeforeDinner > 0 ? PreviousBeforeDinner : 1)) *
                 100
             //before bedtime
             let beforeBedtime_Percent =
                 ((BeforeBedtime - PreviousBeforeBedtime) /
-                    PreviousBeforeBedtime) *
+                    (PreviousBeforeBedtime > 0 ? PreviousBeforeBedtime : 1)) *
                 100
 
             res.status(200).json({
@@ -631,36 +637,40 @@ exports.getIndividualPrescriptionSummary = async (req, res, next) => {
             // previous calculated month
             const ActivePrescription = await PrescriptionModel.find({
                 patientUniqueId: patientUniqueId,
-                creationMonth: Month,
-                creationYear: Year,
+                createdMonth: Month,
+                createdYear: Year,
+                status: 'active'
             }).countDocuments()
             const RefillRequests = await RefillModel.find({
                 patientUniqueId: patientUniqueId,
-                creationMonth: Month,
-                creationYear: Year,
+                createdMonth: Month,
+                createdYear: Year,
             }).countDocuments()
 
             //month before calculated month
             const PreviousActivePrescription = await PrescriptionModel.find({
                 patientUniqueId: patientUniqueId,
-                creationMonth: getPrevMonth,
-                creationYear: getPrevYear,
+                createdMonth: getPrevMonth,
+                createdYear: getPrevYear,
+                status: 'active'
             }).countDocuments()
             const PreviousRefillRequests = await RefillModel.find({
                 patientUniqueId: patientUniqueId,
-                creationMonth: getPrevMonth,
-                creationYear: getPrevYear,
+                createdMonth: getPrevMonth,
+                createdYear: getPrevYear,
             }).countDocuments()
 
             //before brakfast
             let activePrescription_Percent =
                 ((ActivePrescription - PreviousActivePrescription) /
-                    PreviousActivePrescription) *
+                    (PreviousActivePrescription > 0
+                        ? PreviousActivePrescription
+                        : 1)) *
                 100
             //before lunch
             let refillRequests_Percent =
                 ((RefillRequests - PreviousRefillRequests) /
-                    PreviousRefillRequests) *
+                    (PreviousRefillRequests > 0 ? PreviousRefillRequests : 1)) *
                 100
 
             res.status(200).json({
@@ -704,9 +714,12 @@ exports.getIndividualPrescriptionSummary = async (req, res, next) => {
                     {
                         patientUniqueId: patientUniqueId,
                     },
+                    {
+                        status: 'active',
+                    },
 
                     {
-                        createdDate: {
+                        lastPrescribed: {
                             $gte: Date7,
                             $lt: Date1,
                         },
@@ -718,6 +731,7 @@ exports.getIndividualPrescriptionSummary = async (req, res, next) => {
                     {
                         patientUniqueId: patientUniqueId,
                     },
+                   
 
                     {
                         createdDate: {
@@ -734,9 +748,12 @@ exports.getIndividualPrescriptionSummary = async (req, res, next) => {
                     {
                         patientUniqueId: patientUniqueId,
                     },
+                    {
+                        status: 'active',
+                    },
 
                     {
-                        createdDate: {
+                        lastPrescribed: {
                             $gte: Date14,
                             $lt: Date8,
                         },
@@ -761,12 +778,14 @@ exports.getIndividualPrescriptionSummary = async (req, res, next) => {
             //before brakfast
             let activePrescription_Percent =
                 ((ActivePrescription - PreviousActivePrescription) /
-                    PreviousActivePrescription) *
+                    (PreviousActivePrescription > 0
+                        ? PreviousActivePrescription
+                        : 1)) *
                 100
             //before lunch
             let refillRequests_Percent =
                 ((RefillRequests - PreviousRefillRequests) /
-                    PreviousRefillRequests) *
+                    (PreviousRefillRequests > 0 ? PreviousRefillRequests : 1)) *
                 100
 
             res.status(200).json({
@@ -834,7 +853,7 @@ exports.getAllBSVitals = async (req, res, next) => {
 /*get all Fitness Activities vitals*/
 exports.getAllFAVitals = async (req, res, next) => {
     try {
-       // console.log('fa-vitals')
+        // console.log('fa-vitals')
         const getFAVitals = await VitalModel.find({
             healthType: 'Fitness Activities',
         })
