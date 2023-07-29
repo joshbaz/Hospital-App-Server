@@ -51,7 +51,7 @@ exports.createPatient = async (req, res, next) => {
         io.getIO().emit('update-patients', {
             actions: 'new-patient',
         })
-        res.status(201).json(`New Patient  created`)
+        res.status(201).json(`New Patient created`)
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500
