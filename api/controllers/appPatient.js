@@ -127,7 +127,7 @@ exports.registerPatient = async (req, res, next) => {
         client.messages
             .create({
                 body: `verification code : ${otp}`,
-                from: '+12763881224',
+                from: '+4705180642',
                 to: '+254114283856',
             })
             .then(() => {
@@ -414,9 +414,13 @@ exports.patientEditDetails = async (req, res, next) => {
         findPatient.weight = weight
         findPatient.height = height
 
-        await findPatient.save()
+        const savedPatient = await findPatient.save()
 
-        res.status(200).json('Information Updated')
+        res.status(200).json({
+            phoneNumber: savedPatient.phoneNumber,
+            fullname: savedPatient.patientName,
+            patId: savedPatient.patientId,
+        })
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500
