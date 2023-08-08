@@ -127,7 +127,7 @@ exports.registerPatient = async (req, res, next) => {
         client.messages
             .create({
                 body: `verification code : ${otp}`,
-                from: '+4705180642',
+                from: '+14705180642',
                 to: '+254114283856',
             })
             .then(() => {
@@ -183,7 +183,7 @@ exports.forgotPasskey = async (req, res, next) => {
         client.messages
             .create({
                 body: `Your reset code : ${otp}`,
-                from: '+12763881224',
+                from: '+14705180642',
                 to: '+254114283856',
             })
             .then(() => {
