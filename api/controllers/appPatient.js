@@ -128,7 +128,7 @@ exports.registerPatient = async (req, res, next) => {
             .create({
                 body: `verification code : ${otp}`,
                 from: '+14705180642',
-                to: '+254114283856',
+                to: findPatient.phoneNumber,
             })
             .then(() => {
                 res.status(200).json({
@@ -184,7 +184,7 @@ exports.forgotPasskey = async (req, res, next) => {
             .create({
                 body: `Your reset code : ${otp}`,
                 from: '+14705180642',
-                to: '+254114283856',
+                to: findPatient.phoneNumber,
             })
             .then(() => {
                 res.status(200).json({
