@@ -128,7 +128,7 @@ exports.registerPatient = async (req, res, next) => {
             .create({
                 body: `verification code : ${otp}`,
                 from: '+14705180642',
-                to: findPatient.phoneNumber,
+                to: `${findPatient.phoneNumber}`,
             })
             .then(() => {
                 res.status(200).json({
@@ -136,7 +136,8 @@ exports.registerPatient = async (req, res, next) => {
                     phoneNumber: findPatient.phoneNumber,
                 })
             })
-            .catch(() => {
+            .catch((e) => {
+                console.log('e', e)
                 const error = new Error('Error sending message')
                 error.statusCode = 404
                 throw error
@@ -148,6 +149,68 @@ exports.registerPatient = async (req, res, next) => {
         next(error)
     }
 }
+
+
+/** resend  OTP Code*/
+exports.reSendOTPCode = async (req, res, next) => {
+    try {
+        const { phoneNumber } = req.body
+
+       // const hash = await bcrypt.hash(password, 12)
+
+        const findPatient = await PatientModel.findOne({
+            phoneNumber: phoneNumber,
+        })
+
+        if (!findPatient) {
+            const error = new Error('User does not exist')
+            error.statusCode = 404
+            throw error
+        }
+
+        if (findPatient.verified === true) {
+            const error = new Error('Patient already registered')
+            error.statusCode = 404
+            throw error
+        }
+
+        const otp = `${Math.floor(1000 + Math.random() * 9000)}`
+
+      //  findPatient.unVerifiedPassword = hash
+        findPatient.verificationToken = otp
+        await findPatient.save()
+
+        const accountSid = process.env.ACCOUNT_SID
+        const authToken = process.env.AUTH_TOKEN
+
+        const client = require('twilio')(accountSid, authToken)
+
+        client.messages
+            .create({
+                body: `verification code : ${otp}`,
+                from: '+14705180642',
+                to: `${findPatient.phoneNumber}`,
+            })
+            .then(() => {
+                res.status(200).json({
+                    message: 'A new Verification Code re-sent to your number',
+                    phoneNumber: findPatient.phoneNumber,
+                })
+            })
+            .catch((e) => {
+                console.log('e', e)
+                const error = new Error('Error sending message')
+                error.statusCode = 404
+                throw error
+            })
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500
+        }
+        next(error)
+    }
+}
+
 
 /** Forgot passkey */
 exports.forgotPasskey = async (req, res, next) => {
@@ -184,7 +247,7 @@ exports.forgotPasskey = async (req, res, next) => {
             .create({
                 body: `Your reset code : ${otp}`,
                 from: '+14705180642',
-                to: findPatient.phoneNumber,
+                to: `${findPatient.phoneNumber}`,
             })
             .then(() => {
                 res.status(200).json({
